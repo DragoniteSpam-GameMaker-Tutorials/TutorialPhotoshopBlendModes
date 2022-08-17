@@ -2,7 +2,7 @@ window_set_size(1600, 900);
 
 self.mode = 0;
 self.mode_names = [
-    "Normal", "Add", "Sub", "Max",
+    "Normal", "Add", "Sub",
     
     "Darken", "Lighten", "Multiply", "Linear Burn",
     "Screen", "Difference", "Exclusion",

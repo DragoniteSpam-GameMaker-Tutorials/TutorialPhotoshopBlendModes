@@ -29,31 +29,31 @@ vec3 BlendModeSubtract(vec3 src, vec3 dst) {
 
 #region Basic vector math blend modes
 vec3 BlendModeDarken(vec3 src, vec3 dst) {
-    return src;
+    return min(src, dst);
 }
 
 vec3 BlendModeLighten(vec3 src, vec3 dst) {
-    return src;
+    return max(src, dst);
 }
 
 vec3 BlendModeMultiply(vec3 src, vec3 dst) {
-    return src;
+    return src * dst;
 }
 
 vec3 BlendModeLinearBurn(vec3 src, vec3 dst) {
-    return src;
+    return src + dst - 1.0;
 }
 
 vec3 BlendModeScreen(vec3 src, vec3 dst) {
-    return src;
+    return 1.0 - ((1.0 - src) * (1.0 - dst));
 }
 
 vec3 BlendModeDifference(vec3 src, vec3 dst) {
-    return src;
+    return abs(src - dst);
 }
 
 vec3 BlendModeExclusion(vec3 src, vec3 dst) {
-    return src;
+    return src + dst - 2.0 * src * dst;
 }
 #endregion
 
