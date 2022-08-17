@@ -8,6 +8,10 @@ varying vec2 v_vTexcoord;
 // It's generally a good idea not to do floating point comparisons with ==;
 // it's safer to write an equality function/macro function but I'm not getting into that today
 
+bool Equals(float val1, float val2) {
+    return abs(val1 - val2) < 0.001;
+}
+
 uniform sampler2D samp_dst;
 
 uniform int u_BlendMode;
