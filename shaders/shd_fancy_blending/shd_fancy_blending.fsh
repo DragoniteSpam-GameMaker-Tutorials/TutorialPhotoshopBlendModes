@@ -99,23 +99,47 @@ vec3 BlendModeSoftLight(vec3 src, vec3 dst) {
 
 #region Blend modes that are related to other blend modes
 vec3 BlendModeLinearDodge(vec3 src, vec3 dst) {
-    return src;
+    return src + dst;
 }
 
 vec3 BlendModeHardLight(vec3 src, vec3 dst) {
-    return src;
+    return BlendModeOverlay(dst, src);
 }
 
 vec3 BlendModeVividLight(vec3 src, vec3 dst) {
-    return src;
+    vec3 colorBurn = BlendModeColorBurn(dst, 2.0 * src);
+    vec3 colorDodge = BlendModeColorDodge(dst, 2.0 * (src - 0.5));
+    
+    vec3 tmp;
+    tmp.r = (src.r < 0.5) ? colorBurn.r : colorDodge.r;
+    tmp.g = (src.g < 0.5) ? colorBurn.g : colorDodge.g;
+    tmp.b = (src.b < 0.5) ? colorBurn.b : colorDodge.b;
+    
+    return tmp;
 }
 
 vec3 BlendModeLinearLight(vec3 src, vec3 dst) {
-    return src;
+    vec3 linearBurn = BlendModeLinearBurn(dst, 2.0 * src);
+    vec3 linearDodge = BlendModeLinearDodge(dst, 2.0 * (src - 0.5));
+    
+    vec3 tmp;
+    tmp.r = (src.r < 0.5) ? linearBurn.r : linearDodge.r;
+    tmp.g = (src.g < 0.5) ? linearBurn.g : linearDodge.g;
+    tmp.b = (src.b < 0.5) ? linearBurn.b : linearDodge.b;
+    
+    return tmp;
 }
 
 vec3 BlendModePinLight(vec3 src, vec3 dst) {
-    return src;
+    vec3 darken = BlendModeDarken(dst, 2.0 * src);
+    vec3 lighten = BlendModeLighten(dst, 2.0 * (src - 0.5));
+    
+    vec3 tmp;
+    tmp.r = (src.r < 0.5) ? darken.r : lighten.r;
+    tmp.g = (src.g < 0.5) ? darken.g : lighten.g;
+    tmp.b = (src.b < 0.5) ? darken.b : lighten.b;
+    
+    return tmp;
 }
 #endregion
 
@@ -149,31 +173,38 @@ vec3 BlendModeLighterColor(vec3 src, vec3 dst) {
 
 #region I don't have access to a version of Photoshop that can do these
 vec3 BlendModeAverage(vec3 src, vec3 dst) {
-    return src;
+    return (src + dst) / 2.0;
 }
 
 vec3 BlendModeReflect(vec3 src, vec3 dst) {
-    return src;
+    vec3 tmp;
+    tmp.r = (src.r == 1.0) ? src.r : (dst.r * dst.r / (1.0 - src.r));
+    tmp.g = (src.g == 1.0) ? src.g : (dst.g * dst.g / (1.0 - src.g));
+    tmp.b = (src.b == 1.0) ? src.b : (dst.b * dst.b / (1.0 - src.b));
+    
+    return tmp;
 }
 
 vec3 BlendModeGlow(vec3 src, vec3 dst) {
-    return src;
+    return BlendModeAverage(dst, src);
 }
 
 vec3 BlendModeHardMix(vec3 src, vec3 dst) {
-    return src;
+    vec3 sum = BlendModeAdd(src, dst);
+    
+    return floor(sum);
 }
 
 vec3 BlendModeNegation(vec3 src, vec3 dst) {
-    return src;
+    return 1.0 - abs(1.0 - src - dst);
 }
 
 vec3 BlendModePhoenix(vec3 src, vec3 dst) {
-    return src;
+    return min(src, dst) - max(src, dst) + 1.0;
 }
 
 vec3 BlendModeSubstract(vec3 src, vec3 dst) {
-    return src;
+    return src + dst - 1.0;
 }
 #endregion
 
