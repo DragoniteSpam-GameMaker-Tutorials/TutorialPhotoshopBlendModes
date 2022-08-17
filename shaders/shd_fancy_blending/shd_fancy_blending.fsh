@@ -18,11 +18,11 @@ vec3 BlendModeNormal(vec3 src, vec3 dst) {
 }
 
 vec3 BlendModeAdd(vec3 src, vec3 dst) {
-    return src;
+    return src + dst;
 }
 
 vec3 BlendModeSubtract(vec3 src, vec3 dst) {
-    return src;
+    return dst - src;
 }
 #endregion
 
