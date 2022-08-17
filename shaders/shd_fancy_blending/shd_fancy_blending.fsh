@@ -145,28 +145,113 @@ vec3 BlendModePinLight(vec3 src, vec3 dst) {
 
 
 #region Other color operations
+float Color_GetLuminosity(vec3 color) {
+	return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+vec3 Color_SetLuminosity(vec3 color, float luma) {
+    color += vec3(luma - Color_GetLuminosity(color));
+    
+	// clip back into legal range
+	luma = Color_GetLuminosity(color);
+    float cMin = min(color.r, min(color.g, color.b));
+    float cMax = max(color.r, max(color.g, color.b));
+    
+    if(cMin < 0.0) color = mix(vec3(luma), color, luma / (luma - cMin));
+    if(cMax > 1.0) color = mix(vec3(luma), color, (1.0 - luma) / (cMax - luma));
+    
+    return color;
+}
+
+float Color_GetSaturation(vec3 color) {
+	return max(color.r, max(color.g, color.b)) - min(color.r, min(color.g, color.b));
+}
+
+vec3 Color_SetSaturation_MMM(vec3 cSorted, float s) {
+	if(cSorted.z > cSorted.x) {
+		cSorted.y = (((cSorted.y - cSorted.x) * s) / (cSorted.z - cSorted.x));
+		cSorted.z = s;
+	} else {
+		cSorted.y = 0.0;
+		cSorted.z = 0.0;
+	}
+    
+	cSorted.x = 0.0;
+    
+	return cSorted;
+}
+
+vec3 Color_SetSaturation(vec3 color, float s) {
+	if (color.r <= color.g && color.r <= color.b) {
+		if (color.g <= color.b) color.rgb = Color_SetSaturation_MMM(color.rgb, s);
+		else color.rbg = Color_SetSaturation_MMM(color.rbg, s);
+	} else if (color.g <= color.r && color.g <= color.b) {
+		if (color.r <= color.b) color.grb = Color_SetSaturation_MMM(color.grb, s);
+		else color.gbr = Color_SetSaturation_MMM(color.gbr, s);
+	} else {
+		if (color.r <= color.g) color.brg = Color_SetSaturation_MMM(color.brg, s);
+		else color.bgr = Color_SetSaturation_MMM(color.bgr, s);
+	}
+    
+	return color;
+}
+
 vec3 BlendModeHue(vec3 src, vec3 dst) {
-    return src;
+    // Hue: src
+    // Sat: dst
+    // Lum: dst
+    
+    vec3 tmp;
+    tmp = src;
+    tmp = Color_SetSaturation(tmp, Color_GetSaturation(dst));
+    tmp = Color_SetLuminosity(tmp, Color_GetLuminosity(dst));
+    
+    return tmp;
 }
 
 vec3 BlendModeSaturation(vec3 src, vec3 dst) {
-    return src;
+    // Hue: dst
+    // Sat: src
+    // Lum: dst
+    
+    vec3 tmp;
+    tmp = dst;
+    tmp = Color_SetSaturation(tmp, Color_GetSaturation(src));
+    tmp = Color_SetLuminosity(tmp, Color_GetLuminosity(dst));
+    
+    return tmp;
 }
 
 vec3 BlendModeLuminosity(vec3 src, vec3 dst) {
-    return src;
+    // Hue: dst
+    // Sat: dst
+    // Lum: src
+    
+    vec3 tmp;
+    tmp = dst;
+    tmp = Color_SetLuminosity(tmp, Color_GetLuminosity(src));
+    
+    return tmp;
 }
 
 vec3 BlendModeColor(vec3 src, vec3 dst) {
-    return src;
+    // Hue: src
+    // Sat: src
+    // Lum: dst
+    
+    vec3 tmp;
+    tmp = src;
+    tmp = Color_SetLuminosity(tmp, Color_GetLuminosity(dst));
+    
+    return tmp;
 }
 
 vec3 BlendModeDarkerColor(vec3 src, vec3 dst) {
-    return src;
+    return (Color_GetLuminosity(src) < Color_GetLuminosity(dst)) ? src : dst;
 }
 
 vec3 BlendModeLighterColor(vec3 src, vec3 dst) {
-    return src;
+    return (Color_GetLuminosity(src) >= Color_GetLuminosity(dst)) ? src : dst;
 }
 #endregion
 
