@@ -64,21 +64,11 @@ vec3 BlendModeExclusion(vec3 src, vec3 dst) {
 
 #region Component-wise blend modes
 vec3 BlendModeColorBurn(vec3 src, vec3 dst) {
-    vec3 tmp;
-    tmp.r = (src.r == 0.0) ? src.r : (1.0 - ((1.0 - dst.r) / src.r));
-    tmp.g = (src.g == 0.0) ? src.g : (1.0 - ((1.0 - dst.g) / src.g));
-    tmp.b = (src.b == 0.0) ? src.b : (1.0 - ((1.0 - dst.b) / src.b));
-    
-    return tmp;
+    return 1.0 - ((1.0 - dst) / max(src, 0.001));
 }
 
 vec3 BlendModeColorDodge(vec3 src, vec3 dst) {
-    vec3 tmp;
-    tmp.r = (src.r == 1.0) ? src.r : (dst.r / (1.0 - src.r));
-    tmp.g = (src.g == 1.0) ? src.g : (dst.g / (1.0 - src.g));
-    tmp.b = (src.b == 1.0) ? src.b : (dst.b / (1.0 - src.b));
-    
-    return tmp;
+    return dst / max(1.0 - src, 0.001);
 }
 
 vec3 BlendModeOverlay(vec3 src, vec3 dst) {
@@ -92,9 +82,9 @@ vec3 BlendModeOverlay(vec3 src, vec3 dst) {
 
 vec3 BlendModeSoftLight(vec3 src, vec3 dst) {
     vec3 tmp;
-    tmp.r = (src.r > 0.5) ? (1.0 - (1.0 - dst.r) * (1.0 - (src.r - 0.5))) : (dst.r * (src.r + 0.5));
-    tmp.g = (src.g > 0.5) ? (1.0 - (1.0 - dst.g) * (1.0 - (src.g - 0.5))) : (dst.g * (src.g + 0.5));
-    tmp.b = (src.b > 0.5) ? (1.0 - (1.0 - dst.b) * (1.0 - (src.b - 0.5))) : (dst.b * (src.b + 0.5));
+    tmp.r = (src.r < 0.5) ? (2.0 * dst.r * src.r + pow(dst.r, 2.0) * (1.0 - 2.0 * src.r)) : (sqrt(dst.r) * (2.0 * src.r - 1.0) + 2.0 * dst.r * (1.0 - src.r));
+    tmp.g = (src.g < 0.5) ? (2.0 * dst.g * src.g + pow(dst.g, 2.0) * (1.0 - 2.0 * src.g)) : (sqrt(dst.g) * (2.0 * src.g - 1.0) + 2.0 * dst.g * (1.0 - src.g));
+    tmp.b = (src.b < 0.5) ? (2.0 * dst.b * src.b + pow(dst.b, 2.0) * (1.0 - 2.0 * src.b)) : (sqrt(dst.b) * (2.0 * src.b - 1.0) + 2.0 * dst.b * (1.0 - src.b));
     
     return tmp;
 }
