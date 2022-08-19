@@ -256,12 +256,7 @@ vec3 BlendModeAverage(vec3 src, vec3 dst) {
 }
 
 vec3 BlendModeReflect(vec3 src, vec3 dst) {
-    vec3 tmp;
-    tmp.r = (src.r == 1.0) ? src.r : (dst.r * dst.r / (1.0 - src.r));
-    tmp.g = (src.g == 1.0) ? src.g : (dst.g * dst.g / (1.0 - src.g));
-    tmp.b = (src.b == 1.0) ? src.b : (dst.b * dst.b / (1.0 - src.b));
-    
-    return tmp;
+    return (dst * dst / max(1.0 - src, 0.001));
 }
 
 vec3 BlendModeGlow(vec3 src, vec3 dst) {
